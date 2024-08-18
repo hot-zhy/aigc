@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "粉丝列表",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "fan-list": "/components/hm-sms-list-card/fan_index"
+  }
+}

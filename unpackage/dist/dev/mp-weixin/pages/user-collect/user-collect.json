@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "TA的收藏帖子",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "hm-news-card": "/components/hm-news-card/index"
+  }
+}

@@ -1,0 +1,1 @@
+<view><block wx:for="{{addressInfo}}" wx:for-item="item" wx:for-index="index" wx:key="index"><view><view class="test-component _div"><hm-friend-information-card vue-id="{{'4667ff40-1-'+index}}" options="{{item}}" bind:__l="__l"></hm-friend-information-card></view></view></block></view>

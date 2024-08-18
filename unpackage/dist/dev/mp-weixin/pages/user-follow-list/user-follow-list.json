@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "TA的关注",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "user-hm-sms-list-card": "/components/user-hm-sms-list-card/index"
+  }
+}

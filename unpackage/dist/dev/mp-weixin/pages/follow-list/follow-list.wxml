@@ -1,0 +1,1 @@
+<view class="container"><block wx:for="{{options.followInfo}}" wx:for-item="item" wx:for-index="index"><view><view class="test-component _div"><hm-sms-list-card vue-id="{{'79d6518a-1-'+index}}" options="{{item}}" bind:__l="__l"></hm-sms-list-card></view></view></block></view>

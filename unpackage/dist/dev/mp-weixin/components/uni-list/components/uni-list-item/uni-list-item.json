@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "uni-icons": "/uni_modules/helang-tabBar/components/uni-icons/uni-icons"
+  },
+  "component": true
+}

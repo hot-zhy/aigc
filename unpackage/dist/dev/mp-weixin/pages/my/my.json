@@ -1,0 +1,9 @@
+{
+  "navigationStyle": "default",
+  "navigationBarBackgroundColor": "#6A5DAC",
+  "navigationBarTitleText": "",
+  "usingComponents": {
+    "yt-order-list": "/uni_modules/yt-order-list/components/yt-order-list/yt-order-list",
+    "zero-waterfall": "/uni_modules/zero-waterfall/components/zero-waterfall/zero-waterfall"
+  }
+}

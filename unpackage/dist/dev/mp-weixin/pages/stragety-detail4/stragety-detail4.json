@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "zero-timeline": "/components/zero-timeline/zero-timeline"
+  }
+}

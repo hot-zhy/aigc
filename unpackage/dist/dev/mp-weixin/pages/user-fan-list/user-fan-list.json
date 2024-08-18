@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "TA的粉丝",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "fan-list": "/components/user-hm-sms-list-card/fan_index"
+  }
+}

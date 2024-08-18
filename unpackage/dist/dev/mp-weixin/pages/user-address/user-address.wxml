@@ -1,0 +1,1 @@
+<view><block wx:for="{{addressInfo}}" wx:for-item="item" wx:for-index="index" wx:key="index"><view><view class="test-component _div"><user-hm-friend-information vue-id="{{'52379880-1-'+index}}" options="{{item}}" bind:__l="__l"></user-hm-friend-information></view></view></block></view>

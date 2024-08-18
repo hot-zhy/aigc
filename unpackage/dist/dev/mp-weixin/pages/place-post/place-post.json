@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "与地点相关的帖子",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "hm-news-card": "/components/hm-news-card/index"
+  }
+}

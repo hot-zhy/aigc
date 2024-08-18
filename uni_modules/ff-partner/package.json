@@ -1,0 +1,86 @@
+{
+  "id": "ff-partner",
+  "displayName": "参与者列表成员头像列表",
+  "version": "1.0.4",
+  "description": "很实用的页面组件，经典基础框架、插件模式开发、真实应用场景、可多业态转化、超低UI设计轻松上手，高频迭代诸多优势，开箱即飞，用于展示参与者列表、用户列表、头像列表的功能等，搭子组团拼团等都可以用。",
+  "keywords": [
+    "用户列表",
+    "头像列表",
+    "partner",
+    "列表"
+],
+  "repository": "",
+  "engines": {
+    "HBuilderX": "^3.6.14"
+  },
+  "dcloudext": {
+    "type": "component-vue",
+    "sale": {
+      "regular": {
+        "price": "0.00"
+      },
+      "sourcecode": {
+        "price": "0.00"
+      }
+    },
+    "contact": {
+      "qq": ""
+    },
+    "declaration": {
+      "ads": "无",
+      "data": "无",
+      "permissions": "无"
+    },
+    "npmurl": ""
+  },
+  "uni_modules": {
+    "dependencies": [],
+    "encrypt": [],
+    "platforms": {
+      "cloud": {
+        "tcb": "y",
+        "aliyun": "y",
+        "alipay": "y"
+      },
+      "client": {
+        "Vue": {
+          "vue2": "y",
+          "vue3": "u"
+        },
+        "App": {
+          "app-vue": "u",
+          "app-nvue": "u",
+          "app-uvue": "u"
+        },
+        "H5-mobile": {
+          "Safari": "y",
+          "Android Browser": "y",
+          "微信浏览器(Android)": "y",
+          "QQ浏览器(Android)": "y"
+        },
+        "H5-pc": {
+          "Chrome": "y",
+          "IE": "y",
+          "Edge": "y",
+          "Firefox": "y",
+          "Safari": "y"
+        },
+        "小程序": {
+          "微信": "y",
+          "阿里": "y",
+          "百度": "y",
+          "字节跳动": "y",
+          "QQ": "y",
+          "钉钉": "y",
+          "快手": "y",
+          "飞书": "y",
+          "京东": "u"
+        },
+        "快应用": {
+          "华为": "u",
+          "联盟": "u"
+        }
+      }
+    }
+  }
+}

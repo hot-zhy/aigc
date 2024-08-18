@@ -1,0 +1,1 @@
+<view><block wx:for="{{addressInfo}}" wx:for-item="item" wx:for-index="index" wx:key="index"><view class="py-1"><hm-news-card vue-id="{{'044c6e80-1-'+index}}" options="{{item}}" bind:__l="__l"></hm-news-card></view></block></view>

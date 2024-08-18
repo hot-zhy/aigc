@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "搜索结果",
+  "enablePullDownRefresh": false,
+  "navigationBarBackgroundColor": "white",
+  "usingComponents": {
+    "tab-control": "/components/tabControl-tag/tabControl-tag",
+    "uni-list-item": "/components/uni-list/components/uni-list-item/uni-list-item",
+    "user-hm-friend-information-card": "/components/user-hm-friend-information/index",
+    "hm-news-card": "/components/hm-news-card/index"
+  }
+}

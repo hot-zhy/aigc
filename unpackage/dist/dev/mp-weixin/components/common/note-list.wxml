@@ -1,0 +1,1 @@
+<uni-card vue-id="336a8c54-1" subTitle="{{item.intro}}" title="{{item.postDesc}}" extra="{{item.time}}" thumbnail="{{item.postImageList}}" bind:__l="__l" vue-slots="{{['default']}}">{{item.intro}}</uni-card>

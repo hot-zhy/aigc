@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "TripMap",
+  "navigationBarBackgroundColor": "#6A5DAC",
+  "usingComponents": {
+    "zero-waterfall": "/uni_modules/zero-waterfall/components/zero-waterfall/zero-waterfall",
+    "flixedadd": "/components/xiaosikaifa-flixedadd/xiaosikaifa-flixedadd"
+  }
+}

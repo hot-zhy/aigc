@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "攻略贴",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "yt-order-list": "/uni_modules/yt-order-list/components/yt-order-list/yt-order-list"
+  }
+}

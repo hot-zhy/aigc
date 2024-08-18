@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "TA的收藏地点",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "user-hm-friend-information": "/components/user-hm-friend-information/index"
+  }
+}

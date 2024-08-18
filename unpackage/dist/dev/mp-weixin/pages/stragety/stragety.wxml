@@ -1,0 +1,1 @@
+<view><yt-order-list vue-id="7a274de0-1" orderList="{{orderList}}" bind:__l="__l"></yt-order-list></view>

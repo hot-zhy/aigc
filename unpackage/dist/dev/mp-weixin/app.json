@@ -1,0 +1,63 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/register/register",
+    "pages/map/map",
+    "pages/my/my",
+    "pages/search/search",
+    "pages/my-note/my-note",
+    "pages/my-collect/my-collect",
+    "pages/note-desc/note-desc",
+    "pages/follow-list/follow-list",
+    "pages/fan-list/fan-list",
+    "pages/my-address/my-address",
+    "pages/search-list/search-list",
+    "pages/edit-post/edit-post",
+    "pages/user_info/user_info",
+    "pages/user-follow-list/user-follow-list",
+    "pages/user-fan-list/user-fan-list",
+    "pages/user-note/user-note",
+    "pages/user-collect/user-collect",
+    "pages/user-address/user-address",
+    "pages/place-post/place-post",
+    "pages/add/add",
+    "pages/stragety/stragety",
+    "pages/message/message",
+    "pages/stragety-detail4/stragety-detail4"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "borderStyle": "none",
+    "color": "#B5B5B5",
+    "selectedColor": "#d4237a",
+    "backgroundColor": "#fffdff",
+    "fontSize": "15",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "帖子",
+        "iconPath": "static/images/post.png",
+        "selectedIconPath": "static/images/post_selected.png"
+      },
+      {
+        "pagePath": "pages/stragety/stragety",
+        "text": "攻略",
+        "iconPath": "static/images/stragety.png",
+        "selectedIconPath": "static/images/stragety_selected.png"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "text": "我的",
+        "iconPath": "static/images/my.png",
+        "selectedIconPath": "static/images/my_selected.png"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

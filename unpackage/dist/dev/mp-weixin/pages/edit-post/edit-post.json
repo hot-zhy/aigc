@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "发布帖子",
+  "enablePullDownRefresh": false,
+  "navigationBarBackgroundColor": "white",
+  "usingComponents": {
+    "superwei-combox": "/uni_modules/superwei-combox/components/superwei-combox/superwei-combox",
+    "fui-button": "/components/fui-textarea/fui-textarea"
+  }
+}

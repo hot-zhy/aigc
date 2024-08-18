@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "我的收藏地址",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "hm-friend-information-card": "/components/hm-friend-information-card/index"
+  }
+}

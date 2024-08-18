@@ -1,0 +1,1 @@
+<view class="container"><block wx:for="{{options.fanInfo}}" wx:for-item="item" wx:for-index="index"><view><view class="test-component _div"><fan-list vue-id="{{'6d9d6040-1-'+index}}" options="{{item}}" data-event-opts="{{[['^click',[['userDetail',['$0'],[[['options.fanInfo','',index,'id']]]]]]]}}" bind:click="__e" bind:__l="__l"></fan-list></view></view></block></view>

@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "TA的帖子",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "uni-card": "/components/uni-card/components/uni-card/uni-card",
+    "note-list": "/components/common/note-list"
+  }
+}
