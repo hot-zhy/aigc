@@ -165,14 +165,19 @@
 
 			// 播放音乐
 			console.log(this.desc.postId)
+			var postId=JSON.stringify(this.desc.postId)
 			// 获取音乐
 			uni.request({
-				url: 'http://110.40.182.65:8080/post/music/' + this.desc.postId,
-				method: 'GET',
+				url: 'http://110.40.182.65:8080/post/music',
+				method: 'POST',
+				data:postId,
 				success: res => {
 					console.log(res)
+					this.audioUrl=res.data.data
 				},
-				fail: () => {},
+				fail: (err) => {
+					console.log(err)
+				},
 				complete: () => {}
 			});
 

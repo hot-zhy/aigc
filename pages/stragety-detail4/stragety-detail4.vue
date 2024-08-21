@@ -1,5 +1,28 @@
 <template>
 	<view class="container">
+		<!-- 图片弹出框 -->
+<!-- 		<view v-if="showImagePopup" class="image-popup">
+			<view class="image-popup-mask" @tap="hideImagePopup"></view>
+			<view class="image-popup-content">
+				<scroll-view scroll-y>
+					<view v-for="(image, idx) in currentImageList" :key="idx" class="image-item">
+						<image :src="image" mode="aspectFill" class="image"></image>
+					</view>
+				</scroll-view>
+			</view>
+		</view> -->
+		
+		
+		<view class="mask" catchtouchmove="preventTouchMove" v-if="showImagePopup == true" @tap="hideImagePopup"></view>
+		<view class="coupon" :style="'bottom:' + (showImagePopup == true ? '0px':'')">
+			<scroll-view class="scrolls" scroll-y>
+				<imgsBanner-tag :imgList='currentImageList' autoplay duration='500' interval="5000"
+					:isShowSmallImgs='true' customizeDisplayField='url'></imgsBanner-tag>
+		
+			</scroll-view>
+		</view>
+		
+		
 		<view class="mask" catchtouchmove="preventTouchMove" v-if="couponshow == true" @tap="hidecoupon"></view>
 		<view class="coupon" :style="'bottom:' + (couponshow == true ? '0px':'')" @click="choose">
 			<scroll-view class="scrolls" scroll-y>
@@ -15,7 +38,7 @@
 					        <view class="item">
 								<view class="" style="display: flex;align-items: center;align-content: center;"> 
 									<view class="">
-										<image :src="randomAvatar(descTotal.userId)" mode="widthFix" style="width: 50rpx;height:50rpx;border-radius: 100%;"></image>
+										<image :src="randomAvatar(item.userId)" mode="widthFix" style="width: 50rpx;height:50rpx;border-radius: 100%;"></image>
 									</view>
 									<view style="margin-left: 20rpx;">{{ item.userNickname }}</view>
 								</view>
@@ -40,27 +63,33 @@
 				</view>
 			</view>
 		</view>
+		<!-- 可以编辑的人是自己和被邀请的人 -->
 		<Tabs :TabList="tabNav" :currentTab="current" @tabs="tabsChange">
 			<TabPane v-for="(dayData, i) in dataList" :key='i'>
 				<view class="wrap m-1 pt-2 zerotimeline-class">
-					<ZeroTimeline ref="zeroTimeline" :dataList='dayData' gap='30px' :show-left="true">
+					<ZeroTimeline ref="zeroTimeline" :dataList='dayData' gap='30px' :show-left="true" @show-image-popup="handleShowImagePopup">
 					</ZeroTimeline>
-					<view>
-						<button style="background-color: #6A5DAC ;color:white;border-radius: 20rpx;" @tap="editST"
-							v-if="currentUserId==descTotal.userId">编辑</button>
-					</view>
+				</view>
+				<view>
+					<button style="background-color: #6A5DAC ;color:white;border-radius: 20rpx;" @tap="editST"
+						v-if="currentUserId==descTotal.userId||participantIds.includes(Number(currentUserId))">编辑</button>
 				</view>
 			</TabPane>
+
 		</Tabs>
 		<!-- 共同编辑人 -->
-		<view class="">
+		<!-- 只有是自己的帖子才可以邀请别人共同编辑 -->
+		<view class="" v-if="currentUserId==descTotal.userId" @click="inviteTeams">
 			<view class="">
 				<view class="top-header"></view>
 				<view class="integration">
-					<image @click="inviteTeams" style="" class="logo" src="../../static/invite.png" mode=""></image>
+					<image style="" class="logo" src="../../static/invite.png" mode=""></image>
 					<view class="user-integration">
-						<view class="num">
+						<view class="num" v-if="participants.length!==0">
 						<ff-partner :participants="participants"></ff-partner>
+						</view>
+						<view class="num" style="font-size: 15px;margin-top: 40px;" v-else>
+							暂时没有共同好友
 						</view>
 						<view class="tip">
 							邀请好友共同编辑吧~
@@ -120,15 +149,19 @@
 	import ZeroTimeline from "@/components/zero-timeline/zero-timeline.vue"
 	import Tabs from '@/components/wiszx-tabs/tabs.vue'
 	import TabPane from '@/components/wiszx-tabs/tabPane.vue'
+	import imgsBannerTag from '@/components/imgsBanner-tag/imgsBanner-tag.vue';
 	export default {
 		components: {
 			ZeroTimeline,
 			Tabs,
 			TabPane,
-			meSelect
+			meSelect,
+			imgsBannerTag
 		},
 		data() {
 			return {
+				showImagePopup: false,
+				currentImageList: [],
 				// 
 				inviteIds:[],
 				inviteOptions: {
@@ -217,7 +250,8 @@
 				like: 11,
 				days: 4,
 				optionid: 0,
-				followUserList:[]
+				followUserList:[],
+				participantIds:[]
 			}
 		},
 		onLoad(options) {
@@ -228,10 +262,13 @@
 				method: 'GET',
 				data: {},
 				success: res => {
+					console.log(res)
 					//TODO participant获取
-					// this.participants = res.data.data.Teams
+					this.participants = res.data.data.team
+					this.participantIds = this.participants.map(item=>item.userId)
 					this.descTotal = res.data.data
 					this.currentUserId = uni.getStorageSync('userId')
+					this.userId=this.descTotal.userId
 
 					// 该用户是否被本用户关注
 					this.followed = this.descTotal.followed
@@ -265,6 +302,7 @@
 						});
 					}
 					this.dataList = []
+					console.log(this.descTotal.strategySets)
 					this.dataList = this.descTotal.strategySets.map(day => [{
 							title: day.morning,
 							content: day.morningDesc,
@@ -273,6 +311,7 @@
 							leftTitle: '上午',
 							leftContent: day.morningPlayTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.morningImageList
 						},
 						{
 							title: day.lunch,
@@ -282,6 +321,7 @@
 							leftTitle: '午餐',
 							leftContent: day.lunchTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.lunchImageList
 						},
 						{
 							title: day.afternoon,
@@ -291,6 +331,7 @@
 							leftTitle: '下午',
 							leftContent: day.afternoonPlayTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.afternoonImageList
 						},
 						{
 							title: day.dinner,
@@ -300,6 +341,7 @@
 							leftTitle: '晚餐',
 							leftContent: day.dinnerTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.dinnerImageList
 						},
 						{
 							title: day.night,
@@ -309,6 +351,7 @@
 							leftTitle: '晚上',
 							leftContent: day.nightPlayTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.nightImageList
 						}
 					])
 				},
@@ -327,6 +370,23 @@
 			this.updateMainHeight();
 		},
 		methods: {
+			handleShowImagePopup(imageList) {
+				console.log(imageList)
+				this.currentImageList = imageList
+				  .split(",")
+				  .map(d => d.trim())  // 去除每个图片路径前后的空白字符
+				  .filter(d => d)
+				  .map(item => ({
+					'imgSrc':item
+				  }))
+
+				// this.currentImageList = list.map(item => item + '?imageView2/2/w/540/image/webp.webp')
+				console.log(this.currentImageList)
+				this.showImagePopup = true;
+			},
+			hideImagePopup() {
+				this.showImagePopup = false;
+			},
 			itemClick(e) {
 				console.log('列表点击了：', e)
 			},
@@ -345,12 +405,46 @@
 			hidecoupon() {
 				this.couponshow = false
 			},
-			invite(){
-				console.log(this.inviteIds)
-				//调用邀请接口
-				
-				
-				//刷新页面
+			invite() {
+			    console.log(this.inviteIds);
+			    this.inviteIds = this.inviteIds.map(item => item.userId);
+			    
+			    // 调用邀请接口
+			    uni.request({
+			        url: 'http://110.40.182.65:8080/strategy/invite',
+			        method: 'POST',
+			        data: {
+			            'strategyId': this.optionid,
+			            'inviteUserIds': this.inviteIds
+			        },
+			        success: (res) => {
+			            console.log(res);
+			            
+			            this.couponshow = false;
+			            // 刷新页面
+			            uni.request({
+			                url: 'http://110.40.182.65:8080/strategy/' + this.optionid,
+			                method: 'GET',
+			                data: {},
+			                success: (res1) => {
+			                    console.log(res1);
+			                    this.participants = res1.data.data.team;
+			                    this.hidecoupon();
+								uni.showToast({
+									title:'邀请成功',
+									icon:'none'
+								})
+			                },
+			                fail: (err) => {
+			                    console.log(err);
+			                },
+			                complete: () => {}
+			            });
+			        },
+			        fail: (err) => {
+			            console.log(err);
+			        }
+			    });
 			},
 			inviteTeams(){
 				console.log(this.currentUserId)
@@ -362,10 +456,12 @@
 					success: res => {
 						console.log(res);
 						this.followUserList= res.data.data
-						this.followUserList = this.followUserList.map(user => ({
-						    ...user,
-						    select: false
-						}));
+						this.followUserList = this.followUserList.map(item => {
+						  return {
+						    ...item, // 保留原有的属性
+						    select: this.participantIds.includes(item.userId) // 检查 userId 是否在 participants 列表中
+						  };
+						});
 					},
 					fail(err) {
 						console.log(err)
@@ -536,6 +632,7 @@
 						complete: () => {}
 					});
 				} else {
+					console.log(this.userId)
 					//原本没关注，关注
 					uni.request({
 						url: 'http://110.40.182.65:8080/user/follow/' + this.userId,
@@ -650,6 +747,43 @@
 <style>
 	@import '@/colorui/main.css';
 	@import '@/colorui/icon.css';
+	
+	
+	.image-popup {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: #fff;
+		border-top-left-radius: 20rpx;
+		border-top-right-radius: 20rpx;
+		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+		z-index: 1000;
+	}
+
+	.image-popup-mask {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.image-popup-content {
+		padding: 20rpx;
+		height: 70vh;
+	}
+
+	.image-item {
+		margin-bottom: 10rpx;
+	}
+
+	.image {
+		width: 100%;
+		height: 200rpx;
+		border-radius: 10rpx;
+	}
 
 	.tower-swiper .tower-item {
 		transform: scale(calc(0.5 + var(--index) / 10));
@@ -689,7 +823,6 @@
 	}
 		
 	.user-integration {
-		height: 100%;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -697,13 +830,13 @@
 		
 		.num {
 			color: #333;
-			margin-top: 45rpx;
+			margin-top: 25rpx;
 			font-size: 70rpx;
 			font-weight: 600;
 		}
 		
 		.tip {
-			margin-top: 10rpx;
+			/* margin-top: 10rpx; */
 			font-size: 20rpx;
 		}
 	}

@@ -204,6 +204,7 @@
 				this.opencoupon()
 			},
 			submit() {
+				console.log(this.strategyInfo)
 				uni.request({
 					url: 'http://110.40.182.65:8080/strategy/publish',
 					method: 'POST',
@@ -291,7 +292,16 @@
 					},
 					success: (res) => {
 						console.log(res);
-						this.strategyInfo = res.data.data
+						this.strategyInfo = res.data.data.map(item => {
+						  return {
+						    ...item, // 保留其他属性不变
+						    morningImageList: "",
+						    afternoonImageList: "",
+						    nightImageList: "",
+						    lunchImageList: "",
+						    dinnerImageList: ""
+						  };
+						});
 						console.log(this.strategyInfo)
 						this.days = this.strategyInfo.length
 						console.log(this.days)
@@ -309,6 +319,7 @@
 								leftTitle: '上午',
 								leftContent: day.morningPlayTime + '小时',
 								color: this.getRandomColor(),
+								imageList:""
 							},
 							{
 								title: day.lunch,
@@ -318,6 +329,7 @@
 								leftTitle: '午餐',
 								leftContent: day.lunchTime + '小时',
 								color: this.getRandomColor(),
+								imageList: ""
 							},
 							{
 								title: day.afternoon,
@@ -327,6 +339,7 @@
 								leftTitle: '下午',
 								leftContent: day.afternoonPlayTime + '小时',
 								color: this.getRandomColor(),
+								imageList: ""
 							},
 							{
 								title: day.dinner,
@@ -336,6 +349,7 @@
 								leftTitle: '晚餐',
 								leftContent: day.dinnerTime + '小时',
 								color: this.getRandomColor(),
+								imageList: ""
 							},
 							{
 								title: day.night,
@@ -345,6 +359,7 @@
 								leftTitle: '晚上',
 								leftContent: day.nightPlayTime + '小时',
 								color: this.getRandomColor(),
+								imageList: ""
 							}
 						])
 						console.log(this.dataList)

@@ -141,6 +141,7 @@
 					this.descTotal.publishTime = this.dayjs(this.descTotal.publishTime).format(
 						"YYYY-MM-DD HH:mm:ss");
 					this.strategyId = this.descTotal.strategyId
+					this.title=this.descTotal.stragetyTitle
 					console.log(this.descTotal.publishTime)
 					this.days = this.descTotal.day
 					console.log(this.days)
@@ -158,6 +159,7 @@
 							leftTitle: '上午',
 							leftContent: day.morningPlayTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.morningImageList
 						},
 						{
 							title: day.lunch,
@@ -167,6 +169,7 @@
 							leftTitle: '午餐',
 							leftContent: day.lunchTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.lunchImageList
 						},
 						{
 							title: day.afternoon,
@@ -176,6 +179,7 @@
 							leftTitle: '下午',
 							leftContent: day.afternoonPlayTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.afternoonImageList
 						},
 						{
 							title: day.dinner,
@@ -185,6 +189,7 @@
 							leftTitle: '晚餐',
 							leftContent: day.dinnerTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.dinnerImageList
 						},
 						{
 							title: day.night,
@@ -194,6 +199,7 @@
 							leftTitle: '晚上',
 							leftContent: day.nightPlayTime + '小时',
 							color: this.getRandomColor(),
+							imageList: day.nightImageList
 						}
 					])
 				},
@@ -251,7 +257,12 @@
 						"dinner": dayData.find(item => item.leftTitle === "晚餐")?.title || "",
 						"dinnerTime": parseInt(dayData.find(item => item.leftTitle === "晚餐")?.leftContent.match(
 							/\d+/)?.[0] || 0),
-						"dinnerDesc": dayData.find(item => item.leftTitle === "晚餐")?.content || ""
+						"dinnerDesc": dayData.find(item => item.leftTitle === "晚餐")?.content || "",
+						"morningImageList":dayData.find(item => item.leftTitle === "上午")?.imageList || "",
+						"afternoonImageList":dayData.find(item => item.leftTitle === "下午")?.imageList || "",
+						"nightImageList":dayData.find(item => item.leftTitle === "晚上")?.imageList || "",
+						"lunchImageList":dayData.find(item => item.leftTitle === "午餐")?.imageList || "",
+						"dinnerImageList":dayData.find(item => item.leftTitle === "晚餐")?.imageList || ""
 					};
 
 				});

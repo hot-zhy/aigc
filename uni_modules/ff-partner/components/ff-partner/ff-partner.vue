@@ -5,14 +5,14 @@
 			v-for="(item,index) in participants" :key="index">
 			<view class="item">
 				<view style="position: relative;">
-					<image :src="item.avatar" class="avatar" :class="item.gender=='男'?'male':'women'"
-						style="width: 30px;height: 30px;">
-						<image v-if="item.gender=='男'" class="tag" src="../../static/male.png" mode="widthFix" />
+					<image :src="randomAvatar(item.userId)" class="avatar" :class="item.gender=='男'?'male':'women'"
+						style="width: 20px;height: 20px;">
+						<!-- <image v-if="item.gender=='男'" class="tag" src="../../static/male.png" mode="widthFix" /> -->
 						<!-- <image v-else class="tag" src="../../static/women.png" mode="widthFix" /> -->
 					</image>
 				</view>
 <!-- 				<view v-if="showName" class="nickname">
-					{{item.nickname}}
+					{{item.userNickname}}
 				</view> -->
 			</view>
 		</view>
@@ -150,7 +150,10 @@
 			//遮罩点击
 			click() {
 				this.$emit("callback");
-			}
+			},
+			randomAvatar(userId) {
+				return "../../../../../static/user-avatar/" + (userId % 5 + 1) + '.jpg'
+			},
 		}
 	}
 </script>
@@ -161,7 +164,7 @@
 		display: flex;
 		justify-content: flex-start;
 		flex-wrap: nowrap;
-		overflow: hidden;
+		// overflow: hidden;
 		height: auto;
 		overflow-wrap: inherit;
 		margin: 1px 0px;
@@ -175,8 +178,8 @@
 		}
 
 		.item {
-			height: 30px;
-			width: 30px;
+			// height: 30px;
+			// width: 30px;
 			display: grid;
 			justify-items: center;
 			align-items: center;
@@ -205,11 +208,11 @@
 		bottom: 5px;
 		right: 10px;
 		width: 14px;
-		height: 14px;
+		// height: 14px;
 	}
 
 	.nickname {
-		font-size: 12px;
+		font-size: 5px;
 		color: #838383;
 		width: 40px;
 		margin: 0px 1px;

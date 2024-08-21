@@ -15,8 +15,20 @@
 			</view>
 			<view class="right" :style="'background-color:'+ convertToRGBA(item.color, 0.16)">
 				<view class="content" style="width: 100%;">
-					<input v-model="item.title" class="title" />
-					<textarea v-model="item.content" class="sub"></textarea>
+					<input v-model="item.title" class="title" style="font-size: 35rpx;" />
+					<textarea v-model="item.content" class="sub" style="font-size: 25rpx;height: 100rpx;"></textarea>
+					
+					<view @tap="chooseImages(index)" style="display: flex;flex-wrap: wrap;margin-top:20rpx">
+						<image src="../../static/upload.png" mode="widthFix"
+							style="width: 120rpx;height: 120rpx;"></image>
+						<view v-for="(item1, index1) in item.imageList.split(',')" :key="index1" v-if="item1" class="image-container">
+						  <image :src="item1" mode="aspectFill"
+						    style="width: 120rpx; height: 120rpx; border-radius: 20rpx; margin-left: 20rpx;">
+						  </image>
+						  <view class="delete-btn" @tap.stop="removeImage(index, item1)">X</view>
+						</view>
+
+					</view>
 				</view>
 			</view>
 		</view>
@@ -48,26 +60,59 @@
 				default: '20rpx'
 			}
 		},
-		onShow() {
-			console.log(this.i)
-		},
 		methods: {
+			chooseImages(index) {
+				uni.chooseImage({
+					count: 9,
+					sizeType: ['original', 'compressed'],
+					success: res => {
+						const item = this.dataList[index];
+						const newImagePaths = res.tempFilePaths;
+						const existingImageList = new Set(item.imageList.split(','));
+
+						newImagePaths.forEach((filePath, i) => {
+							uni.uploadFile({
+								url: 'http://110.40.182.65:8080/post/upload',
+								filePath: filePath,
+								name: 'file',
+								header: {
+									'Content-Type': 'multipart/form-data'
+								},
+								success: (uploadRes) => {
+									const uploadedImage = JSON.parse(uploadRes.data).message;
+									if (!existingImageList.has(uploadedImage)) {
+										existingImageList.add(uploadedImage);
+									}
+									if (i === newImagePaths.length - 1) {
+										item.imageList = Array.from(existingImageList).join(',');
+									}
+								},
+								fail: (error) => {
+									console.log(error);
+								}
+							})
+						});
+					}
+				});
+			},
+			removeImage(index, image) {
+				const item = this.dataList[index];
+				let imageList = item.imageList.split(',').filter(img => img !== image);
+				item.imageList = imageList.join(',');
+			},
 			convertToRGBA(rgb, opacity) {
 				return rgb.replace('rgb', 'rgba').replace(')', `, ${opacity})`);
 			},
 			updateDataList() {
 				this.$emit('updateDataList', [this.dataList, this.i]);
-			},
+			}
 		},
 		watch: {
 			dataList: {
 				handler(newVal, oldVal) {
-					// console.log("DataList modified:");
-					// console.log("Old value:", oldVal);
-					// console.log("New value:", newVal);
 					this.updateDataList();
 				},
-				deep: true // 用于监听对象内部值的变化
+				deep: true
 			}
 		}
 	};
@@ -149,6 +194,32 @@
 		.item:last-child {
 			.line {
 				background: transparent;
+			}
+		}
+
+		.image-container {
+			position: relative;
+			.image-container {
+				.image {
+					width: 120rpx;
+					height: 120rpx;
+					border-radius: 20rpx;
+					margin-left: 20rpx;
+				}
+			}
+			.delete-btn {
+				position: absolute;
+				top: 0;
+				right: 0;
+				background: rgba(255, 0, 0, 0.5);
+				color: #fff;
+				width: 30rpx;
+				height: 30rpx;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				border-radius: 50%;
+				cursor: pointer;
 			}
 		}
 	}

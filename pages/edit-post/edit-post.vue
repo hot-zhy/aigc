@@ -50,8 +50,8 @@
 
 		<!-- 添加图片 -->
 		<view class="" @tap="chooseImages" style="display: flex;flex-wrap: wrap;margin-top:20rpx">
-			<image src="https://api.myisre.cn/266fb204fc898feae46618edf.png" mode="widthFix"
-				style="width: 150rpx;height: 150rpx;"></image>
+			<image src="../../static/upload.png" mode="widthFix"
+				style="width: 120rpx;height: 120rpx;margin-left:20rpx"></image>
 			<view class="" v-for="(item,index) in imageList" :key="index">
 				<image :src="item" mode=""
 					style="width: 150rpx;height: 150rpx;border-radius: 20rpx;margin-left: 20rpx;"></image>

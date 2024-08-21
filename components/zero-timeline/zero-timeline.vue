@@ -1,18 +1,17 @@
 <template>
 	<view class="zero-timeline">
-		<view class="mask" catchtouchmove="preventTouchMove" v-if="couponshow == true" @tap="hidecoupon"></view>
-		<view class="coupon" :style="'bottom:' + (couponshow == true ? '0px':'')" @click="choose">
+		<view class="coupon" :style="'bottom:' + (couponshow == true ? '0px':'')">
 			<scroll-view class="scrolls" scroll-y>
 				<yt-order-list-jump :orderList="myStragetyList"></yt-order-list-jump>
-
 			</scroll-view>
 		</view>
+	
 		<view v-for="(item, index) in dataList" :key="index" class="item"
 			:style="{'--color':item.color||'#0396FF','--bgcolor':item.color?item.color+'1a':'#0396FF1a','--gap':gap,'--left':leftWidth}">
 			<view class="left" v-if="showLeft">
 				<view class="content">
 					<view class="title">
-						{{ item.leftTitle}}
+						{{ item.leftTitle }}
 					</view>
 					<view class="sub">
 						{{ item.leftContent }}
@@ -27,10 +26,10 @@
 				<view class="" style="display: flex;">
 					<view class="">
 						<view class="time">
-							{{ item.time}}
+							{{ item.time }}
 						</view>
 						<view class="content" style="width: 100%;">
-							<view class="" style="display: flex;align-items: center;justify-content: space-between;width: 100%;">
+							<view class="" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
 								<view class="title" style="flex-grow: 1; text-align: left;">
 									{{ item.title }}
 								</view>
@@ -40,12 +39,14 @@
 							</view>
 							<view class="Express" style="width: 100%;">
 								<view class="info">
-									<view style="width: 100%;" v-if="item.content!==''" :class="{hide:!iSinfo}" class="sub">
-										{{item.content}}
+									<view style="width: 100%;" v-if="item.content !== ''" :class="{ hide: !iSinfo }" class="sub">
+										{{ item.content }}
 									</view>
-									<view style="width: 100%;" :class="{hide:!iSinfo}" class="sub" v-else>暂时没有详细介绍哦~可以编辑一下为这个旅游景点增加简短的介绍哦~</view>
+									<view style="width: 100%;" :class="{ hide: !iSinfo }" class="sub" v-else>
+										暂时没有详细介绍哦~可以编辑一下为这个旅游景点增加简短的介绍哦~
+									</view>
 								</view>
-								<!-- <text @tap="showinfo" v-if="iSinfo" class="hidebtn">收起</text> -->
+								<button  v-if="item.imageList.split(',').map(d=>d.trim()).filter(d=>d).length !== 0" class="view-images-btn" :style="'background-color:' + convertToRGBA(item.color, 0.26)" @click="notifyParent(item.imageList)">查看关联图片</button>
 							</view>
 						</view>
 					</view>
@@ -84,21 +85,15 @@
 			return {
 				iSinfo: false,
 				selectedContent: '',
-				couponshow: false,
+				couponshow: false
 			}
 		},
 		methods: {
-
 			convertToRGBA(rgb, opacity) {
-				// 从"rgb(x, y, z)"形式转换为"rgba(x, y, z, opacity)"
 				return rgb.replace('rgb', 'rgba').replace(')', `, ${opacity})`);
 			},
-			showinfo(content) {
-				this.selectedContent = content; // 更新选中的内容
-				uni.showModal({
-					content: this.selectedContent,
-					showCancel: false // 只显示确认按钮
-				});
+			notifyParent(imageList) {
+				this.$emit('show-image-popup', imageList);
 			},
 			chat(title) {
 				console.log(title)
@@ -110,12 +105,22 @@
 	};
 </script>
 
+
 <style lang="scss" scoped>
+	.view-images-btn {
+		// width:100%;
+		margin-top: 5rpx;
+		font-size: 25rpx;
+		background-color: #dbdde2;
+		text-align: center;
+		cursor: pointer;
+		border: none;
+		outline: none;
+	}
+
 	.Express {
 		display: flex;
-		// width: 100%;
 		flex-direction: column;
-		// background-color: #fff;
 		position: relative;
 
 		.info {
@@ -137,14 +142,12 @@
 				display: flex;
 				justify-content: flex-end;
 				align-items: center;
-				// background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 50%);
 				color: #0078FF;
 				position: absolute;
 				bottom: 5upx;
 				right: 0upx;
 			}
 		}
-
 	}
 
 	.hidebtn {
@@ -158,10 +161,8 @@
 	.hide {
 		word-break: break-word; //换行模式
 		overflow: hidden;
-		// overflow: scroll;
 		text-overflow: ellipsis; //修剪文字
 		display: -webkit-box;
-		// -webkit-line-clamp: 2; //此处为上限行数
 		-webkit-box-orient: vertical;
 	}
 
@@ -173,7 +174,6 @@
 
 		.item {
 			display: flex;
-
 		}
 
 		.left {
@@ -252,11 +252,10 @@
 					font-weight: 650;
 					color: var(--color);
 					font-size: 33.5rpx;
-					// padding: 5rpx 0;
 				}
 
 				.sub {
-					width:100%;
+					width: 100%;
 					color: #666666;
 					font-size: 28rpx;
 					padding: 5rpx 0;
@@ -267,7 +266,6 @@
 					font-size: 24rpx;
 				}
 			}
-
 		}
 
 		.item:last-child {
@@ -275,5 +273,42 @@
 				background: transparent;
 			}
 		}
+	}
+
+	// 图片弹出框样式
+	.image-popup {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: #fff;
+		border-top-left-radius: 20rpx;
+		border-top-right-radius: 20rpx;
+		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+		z-index: 1000;
+	}
+
+	.image-popup-mask {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.5);
+	}
+
+	.image-popup-content {
+		padding: 20rpx;
+		height: 70vh;
+	}
+
+	.image-item {
+		margin-bottom: 10rpx;
+	}
+
+	.image {
+		width: 100%;
+		height: 200rpx;
+		border-radius: 10rpx;
 	}
 </style>

@@ -34,7 +34,7 @@
 				<view style="width: 100%;" class="order-bom-left">
 					<view style="width: 100%">
 						<view class="order-bom-left">
-							<ff-partner :participants="participants"></ff-partner>
+							<ff-partner :participants="item.team"></ff-partner>
 						</view>
 					</view>
 				</view>
@@ -103,8 +103,8 @@
 
 <style lang="scss">
 	.avatar {
-		width: 40rpx;
-		height: 40rpx;
+		width: 20px;
+		height: 20px;
 		border-radius: 100%;
 		margin-right: 10px;
 	}
@@ -123,7 +123,7 @@
 
 	.order {
 		width: 100%;
-		// height: 200rpx;
+		height: auto;
 		border-radius: 20rpx;
 		background-color: #ffffff;
 		padding: 15rpx;
@@ -192,7 +192,7 @@
 		.order-bom {
 			border-radius: 30rpx;
 			width: 100%;
-			height: 60rpx;
+			height: auto;
 
 			display: flex;
 			align-items: center;

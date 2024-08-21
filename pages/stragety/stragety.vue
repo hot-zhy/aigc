@@ -47,6 +47,7 @@
 				url: 'http://110.40.182.65:8080/strategy/list',
 				method: 'GET',
 				success: (res) => {
+					console.log(res)
 					this.orderList = res.data.data
 				},
 				fail: (error) => {
