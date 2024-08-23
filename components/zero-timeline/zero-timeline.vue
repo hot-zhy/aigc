@@ -5,7 +5,7 @@
 				<yt-order-list-jump :orderList="myStragetyList"></yt-order-list-jump>
 			</scroll-view>
 		</view>
-	
+
 		<view v-for="(item, index) in dataList" :key="index" class="item"
 			:style="{'--color':item.color||'#0396FF','--bgcolor':item.color?item.color+'1a':'#0396FF1a','--gap':gap,'--left':leftWidth}">
 			<view class="left" v-if="showLeft">
@@ -29,24 +29,41 @@
 							{{ item.time }}
 						</view>
 						<view class="content" style="width: 100%;">
-							<view class="" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+							<view class=""
+								style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
 								<view class="title" style="flex-grow: 1; text-align: left;">
 									{{ item.title }}
 								</view>
 								<view class="" style="flex-shrink: 0;">
-									<image src="../../static/query.png" style="width:50rpx;height:50rpx;margin-left: auto;" @tap="chat(item.title)" />
+									<image src="../../static/query.png"
+										style="width:50rpx;height:50rpx;margin-left: auto;" @tap="chat(item.title)" />
 								</view>
 							</view>
 							<view class="Express" style="width: 100%;">
 								<view class="info">
-									<view style="width: 100%;" v-if="item.content !== ''" :class="{ hide: !iSinfo }" class="sub">
+									<view style="width: 100%;" v-if="item.content !== ''" :class="{ hide: !iSinfo }"
+										class="sub">
 										{{ item.content }}
 									</view>
 									<view style="width: 100%;" :class="{ hide: !iSinfo }" class="sub" v-else>
 										暂时没有详细介绍哦~可以编辑一下为这个旅游景点增加简短的介绍哦~
 									</view>
 								</view>
-								<button  v-if="item.imageList.split(',').map(d=>d.trim()).filter(d=>d).length !== 0" class="view-images-btn" :style="'background-color:' + convertToRGBA(item.color, 0.26)" @click="notifyParent(item.imageList)">查看关联图片</button>
+								<view class="" style="width: 100%; display: flex;">
+									<button v-if="item.imageList.split(',').map(d=>d.trim()).filter(d=>d).length !== 0"
+										class="view-images-btn"
+										:style="{ backgroundColor: convertToRGBA(item.color, 0.26), flex: 1 }"
+										@click="notifyParent(item,0)">
+										查看关联图片
+									</button>
+									<view class="view-images-btn" style="justify-content: center;justify-items: center;"
+										:style="{ flex: 1, borderRadius: '20px', display: 'flex', alignItems: 'center', paddingLeft: '10px', paddingRight: '10px' }"
+										@click="notifyParent(item,1)">
+										<image src="../../static/daka.png" mode="" style="width: 75rpx; height: 75rpx;">
+										</image>
+									</view>
+								</view>
+
 							</view>
 						</view>
 					</view>
@@ -92,8 +109,13 @@
 			convertToRGBA(rgb, opacity) {
 				return rgb.replace('rgb', 'rgba').replace(')', `, ${opacity})`);
 			},
-			notifyParent(imageList) {
-				this.$emit('show-image-popup', imageList);
+			notifyParent(item, index) {
+				if (index === 0) {
+					this.$emit('show-popup', item.imageList, index)
+				} else {
+					this.$emit('show-popup', item.title, index)
+				}
+				// this.$emit('show-image-popup', imageList);
 			},
 			chat(title) {
 				console.log(title)
@@ -111,7 +133,7 @@
 		// width:100%;
 		margin-top: 5rpx;
 		font-size: 25rpx;
-		background-color: #dbdde2;
+		// background-color: #dbdde2;
 		text-align: center;
 		cursor: pointer;
 		border: none;

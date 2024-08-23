@@ -19,7 +19,7 @@
 		},
 		data() {
 			return {
-				jixiangwu: "../../../../../static/jixiangwu.png",
+				jixiangwu: "../../../../../static/jixiang.png",
 				orderList: [],
 				backgroundColor: "#6A5DAC",
 				selectbackgroundColor: "#ffffff",

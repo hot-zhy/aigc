@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<!-- 图片弹出框 -->
-<!-- 		<view v-if="showImagePopup" class="image-popup">
+		<!-- 		<view v-if="showImagePopup" class="image-popup">
 			<view class="image-popup-mask" @tap="hideImagePopup"></view>
 			<view class="image-popup-content">
 				<scroll-view scroll-y>
@@ -11,45 +11,44 @@
 				</scroll-view>
 			</view>
 		</view> -->
-		
-		
+
+
 		<view class="mask" catchtouchmove="preventTouchMove" v-if="showImagePopup == true" @tap="hideImagePopup"></view>
 		<view class="coupon" :style="'bottom:' + (showImagePopup == true ? '0px':'')">
 			<scroll-view class="scrolls" scroll-y>
-				<imgsBanner-tag :imgList='currentImageList' autoplay duration='500' interval="5000"
-					:isShowSmallImgs='true' customizeDisplayField='url'></imgsBanner-tag>
-		
+				<imgsBanner-tag v-if="showImagePopup==true" :imgList='currentImageList' autoplay duration='500'
+					interval="5000" :isShowSmallImgs='true' customizeDisplayField='url'></imgsBanner-tag>
+
+
 			</scroll-view>
 		</view>
-		
-		
+
+
+
+
+
 		<view class="mask" catchtouchmove="preventTouchMove" v-if="couponshow == true" @tap="hidecoupon"></view>
 		<view class="coupon" :style="'bottom:' + (couponshow == true ? '0px':'')" @click="choose">
 			<scroll-view class="scrolls" scroll-y>
-				<me-select
-				ref="meSelect" 
-				@change="change" 
-				@finish="finish" 
-				@itemClick="itemClick" 
-				:datalist="followUserList"
-				:options="inviteOptions"
-				>
-					    <template v-slot="{ item, index }">
-					        <view class="item">
-								<view class="" style="display: flex;align-items: center;align-content: center;"> 
-									<view class="">
-										<image :src="randomAvatar(item.userId)" mode="widthFix" style="width: 50rpx;height:50rpx;border-radius: 100%;"></image>
-									</view>
-									<view style="margin-left: 20rpx;">{{ item.userNickname }}</view>
+				<me-select ref="meSelect" @change="change" @finish="finish" @itemClick="itemClick"
+					:datalist="followUserList" :options="inviteOptions">
+					<template v-slot="{ item, index }">
+						<view class="item">
+							<view class="" style="display: flex;align-items: center;align-content: center;">
+								<view class="">
+									<image :src="randomAvatar(item.userId)" mode="widthFix"
+										style="width: 50rpx;height:50rpx;border-radius: 100%;"></image>
 								</view>
-					        </view>
-					    </template>
+								<view style="margin-left: 20rpx;">{{ item.userNickname }}</view>
+							</view>
+						</view>
+					</template>
 				</me-select>
 				<button @click="invite" style="background-color: #6A5DAC ;color:white;border-radius: 20rpx;">邀请</button>
-		
+
 			</scroll-view>
 		</view>
-		
+
 		<view class="cu-bar bg-transparent search">
 			<view class="cu-avatar round " @click.stop="userDetail(descTotal.userId)">
 				<image :src="randomAvatar(descTotal.userId)" mode="widthFix" class="round"></image>
@@ -67,7 +66,8 @@
 		<Tabs :TabList="tabNav" :currentTab="current" @tabs="tabsChange">
 			<TabPane v-for="(dayData, i) in dataList" :key='i'>
 				<view class="wrap m-1 pt-2 zerotimeline-class">
-					<ZeroTimeline ref="zeroTimeline" :dataList='dayData' gap='30px' :show-left="true" @show-image-popup="handleShowImagePopup">
+					<ZeroTimeline ref="zeroTimeline" :dataList='dayData' gap='30px' :show-left="true"
+						@show-popup="handleShowImagePopup">
 					</ZeroTimeline>
 				</view>
 				<view>
@@ -80,25 +80,26 @@
 		<!-- 共同编辑人 -->
 		<!-- 只有是自己的帖子才可以邀请别人共同编辑 -->
 		<view class="" v-if="currentUserId==descTotal.userId" @click="inviteTeams">
-			<view class="">
-				<view class="top-header"></view>
-				<view class="integration">
-					<image style="" class="logo" src="../../static/invite.png" mode=""></image>
-					<view class="user-integration">
-						<view class="num" v-if="participants.length!==0">
-						<ff-partner :participants="participants"></ff-partner>
-						</view>
-						<view class="num" style="font-size: 15px;margin-top: 40px;" v-else>
-							暂时没有共同好友
-						</view>
-						<view class="tip">
-							邀请好友共同编辑吧~
-						</view>
+			<view class="" style="padding: 10px;">
+				<view class="invite-btn" @click="inviteFriends">
+					<view class="" style="">
+						<image style="width: 50rpx;height:50rpx;" src="../../static/invite.png" mode=""></image>
+						<view style="font-size: 25rpx;">邀请好友</view>
 					</view>
 				</view>
 			</view>
 		</view>
-		
+		<view v-if="participants.length!==0" class="" style="text-align: center;margin-bottom: 10px;font-size: 25rpx;">
+			共同编辑者</view>
+		<view class="card-list" v-if="participants.length!==0">
+			<view class="card" v-for="friend in participants" :key="friend.id">
+				<image class="card-avatar" :src="randomAvatar(friend.userId)"></image>
+				<text class="card-name">{{ friend.userNickname }}</text>
+			</view>
+		</view>
+		<view v-if="currentUserId==descTotal.userId" class=""
+			style="text-align: center;margin-top: 10px;font-size: 25rpx" v-else>邀请好友共同编辑吧~</view>
+
 		<view style="padding: 40rpx;">
 			<!-- 标题 -->
 			<h2>{{descTotal.strategyTitle}}·<text style="color:blue">{{descTotal.day}}天</text></h2>
@@ -160,10 +161,12 @@
 		},
 		data() {
 			return {
+				friends: [],
 				showImagePopup: false,
+				showPlacesPopup: false,
 				currentImageList: [],
 				// 
-				inviteIds:[],
+				inviteIds: [],
 				inviteOptions: {
 					flags: ['id'], //设置需要返回的参数这个参数必须在 dataList 中的item中存在（不配置默认全部返回）
 					itemCanSelect: true //是否开启点击列表页选择配置
@@ -183,13 +186,13 @@
 				],
 				// 邀请
 				couponshow: false,
-				userIntergration:0,
+				userIntergration: 0,
 				participants: [{
 						"avatar": "https://img2.baidu.com/it/u=2767001996,1988683889&fm=253&fmt=auto&app=138&f=JPEG?w=300&h=300",
-					}, 
+					},
 					{
 						"avatar": "https://img2.baidu.com/it/u=2767001996,1988683889&fm=253&fmt=auto&app=138&f=JPEG?w=300&h=300",
-					}, 
+					},
 					{
 						"avatar": "https://img2.baidu.com/it/u=2767001996,1988683889&fm=253&fmt=auto&app=138&f=JPEG?w=300&h=300",
 					},
@@ -250,8 +253,8 @@
 				like: 11,
 				days: 4,
 				optionid: 0,
-				followUserList:[],
-				participantIds:[]
+				followUserList: [],
+				participantIds: []
 			}
 		},
 		onLoad(options) {
@@ -265,10 +268,10 @@
 					console.log(res)
 					//TODO participant获取
 					this.participants = res.data.data.team
-					this.participantIds = this.participants.map(item=>item.userId)
+					this.participantIds = this.participants.map(item => item.userId)
 					this.descTotal = res.data.data
 					this.currentUserId = uni.getStorageSync('userId')
-					this.userId=this.descTotal.userId
+					this.userId = this.descTotal.userId
 
 					// 该用户是否被本用户关注
 					this.followed = this.descTotal.followed
@@ -370,22 +373,76 @@
 			this.updateMainHeight();
 		},
 		methods: {
-			handleShowImagePopup(imageList) {
-				console.log(imageList)
-				this.currentImageList = imageList
-				  .split(",")
-				  .map(d => d.trim())  // 去除每个图片路径前后的空白字符
-				  .filter(d => d)
-				  .map(item => ({
-					'imgSrc':item
-				  }))
+			//地图点击事件
+			markertap(e) {
+				console.log("===你点击了标记点===", e)
+				console.log(e.target.markerId);
+				let placeName = "";
+				// 查找该标记点的名字
+				for (let i = 0; i < this.placeList.length; i++) {
+					if (this.placeList[i].placeId == e.target.markerId) {
+						placeName = this.placeList[i].placeAddress
+					}
+				}
+				//查询与该地点相关的帖子
+				uni.request({
+					url: 'http://110.40.182.65:8080/post/find/' + e.target.markerId + '/post',
+					method: 'GET',
+					success: res => {
+						let item = encodeURIComponent(JSON.stringify(res.data.data))
+						uni.showModal({
+							title: '你点击了 ' + placeName,
+							content: '经度:' + e.target.latitude + '   纬度:' + e.target.longitude,
+							showCancel: true,
+							cancelText: '关闭',
+							confirmText: '查看相关帖子',
+							success: res => {
+								if (res.confirm == true) {
+									uni.navigateTo({
+										url: '/pages/place-post/place-post?item=' + item,
 
-				// this.currentImageList = list.map(item => item + '?imageView2/2/w/540/image/webp.webp')
-				console.log(this.currentImageList)
-				this.showImagePopup = true;
+									});
+								}
+							},
+							fail: () => {},
+							complete: () => {}
+						});
+					},
+					fail: () => {},
+					complete: () => {}
+				});
+			},
+			//地图点击事件
+			callouttap(e) {
+				console.log('地图点击事件', e)
+			},
+			handleShowImagePopup(data, index) {
+				if (index === 0) {
+					let imageList = data
+					this.currentImageList = imageList
+						.split(",")
+						.map(d => d.trim()) // 去除每个图片路径前后的空白字符
+						.filter(d => d)
+						.map(item => ({
+							'imgSrc': item
+						}))
+					this.showImagePopup = true;
+				} else {
+					this.showPlacesPopup = true;
+					uni.navigateTo({
+						url: `/pages/map/index?place=${data}`
+					})
+				}
+
+
+				console.log(this.showPlacesPopup)
 			},
 			hideImagePopup() {
 				this.showImagePopup = false;
+				this.showPlacesPopup = false;
+			},
+			hidePlacesPopup() {
+				this.showPlacesPopup = false;
 			},
 			itemClick(e) {
 				console.log('列表点击了：', e)
@@ -395,7 +452,7 @@
 			},
 			change(e) {
 				console.log('发生改变了：', e)
-				this.inviteIds=e
+				this.inviteIds = e
 			},
 			// 打开优惠券弹框
 			opencoupon() {
@@ -406,61 +463,62 @@
 				this.couponshow = false
 			},
 			invite() {
-			    console.log(this.inviteIds);
-			    this.inviteIds = this.inviteIds.map(item => item.userId);
-			    
-			    // 调用邀请接口
-			    uni.request({
-			        url: 'http://110.40.182.65:8080/strategy/invite',
-			        method: 'POST',
-			        data: {
-			            'strategyId': this.optionid,
-			            'inviteUserIds': this.inviteIds
-			        },
-			        success: (res) => {
-			            console.log(res);
-			            
-			            this.couponshow = false;
-			            // 刷新页面
-			            uni.request({
-			                url: 'http://110.40.182.65:8080/strategy/' + this.optionid,
-			                method: 'GET',
-			                data: {},
-			                success: (res1) => {
-			                    console.log(res1);
-			                    this.participants = res1.data.data.team;
-			                    this.hidecoupon();
+				console.log(this.inviteIds);
+				this.inviteIds = this.inviteIds.map(item => item.userId);
+
+				// 调用邀请接口
+				uni.request({
+					url: 'http://110.40.182.65:8080/strategy/invite',
+					method: 'POST',
+					data: {
+						'strategyId': this.optionid,
+						'inviteUserIds': this.inviteIds
+					},
+					success: (res) => {
+						console.log(res);
+
+						this.couponshow = false;
+						// 刷新页面
+						uni.request({
+							url: 'http://110.40.182.65:8080/strategy/' + this.optionid,
+							method: 'GET',
+							data: {},
+							success: (res1) => {
+								console.log(res1);
+								this.participants = res1.data.data.team;
+								this.hidecoupon();
 								uni.showToast({
-									title:'邀请成功',
-									icon:'none'
+									title: '邀请成功',
+									icon: 'none'
 								})
-			                },
-			                fail: (err) => {
-			                    console.log(err);
-			                },
-			                complete: () => {}
-			            });
-			        },
-			        fail: (err) => {
-			            console.log(err);
-			        }
-			    });
+							},
+							fail: (err) => {
+								console.log(err);
+							},
+							complete: () => {}
+						});
+					},
+					fail: (err) => {
+						console.log(err);
+					}
+				});
 			},
-			inviteTeams(){
+			inviteTeams() {
 				console.log(this.currentUserId)
 				this.opencoupon()
 				uni.request({
-					url: 'http://110.40.182.65:8080/user/'+ this.currentUserId+'/follow/list',
+					url: 'http://110.40.182.65:8080/user/' + this.currentUserId + '/follow/list',
 					method: 'GET',
 					data: {},
 					success: res => {
 						console.log(res);
-						this.followUserList= res.data.data
+						this.followUserList = res.data.data
 						this.followUserList = this.followUserList.map(item => {
-						  return {
-						    ...item, // 保留原有的属性
-						    select: this.participantIds.includes(item.userId) // 检查 userId 是否在 participants 列表中
-						  };
+							return {
+								...item, // 保留原有的属性
+								select: this.participantIds.includes(item
+									.userId) // 检查 userId 是否在 participants 列表中
+							};
 						});
 					},
 					fail(err) {
@@ -521,7 +579,7 @@
 				console.log(id);
 				uni.navigateTo({
 					url: '/pages/user_info/user_info?userId=' + id,
-					
+
 				});
 
 			},
@@ -537,7 +595,7 @@
 						let item = encodeURIComponent(JSON.stringify(res.data.data))
 						uni.navigateTo({
 							url: '/pages/note-desc/note-desc?item=' + item,
-							
+
 						});
 					},
 					fail: () => {},
@@ -747,8 +805,57 @@
 <style>
 	@import '@/colorui/main.css';
 	@import '@/colorui/icon.css';
-	
-	
+
+	.invite-btn {
+		/* box-shadow: 3rpx 5rpx 30rpx 0rpx rgba(243, 170, 199, 0.4);
+	  background: linear-gradient(to right, #fed6e6, #f3b9c9); */
+		color: #5f9eef;
+		padding: 10px;
+		text-align: center;
+		border-radius: 5px;
+		/* margin-bottom: 10px; */
+	}
+
+	.card-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		/* 增加卡片之间的间隔 */
+	}
+
+	.card {
+		width: calc(20% - 10px);
+		/* 每行五个卡片，宽度为容器宽度的 20%，减去间隔 */
+		background-color: #fff;
+		border-radius: 10px;
+		padding: 10px;
+		text-align: center;
+	}
+
+	.card-avatar {
+		width: 60rpx;
+		/* 调整头像大小 */
+		height: 60rpx;
+		/* 调整头像大小 */
+		border-radius: 50%;
+		object-fit: cover;
+	}
+
+	.card-name {
+		margin-top: 5px;
+		font-size: 20rpx;
+		/* 调整字体大小 */
+		white-space: nowrap;
+		/* 防止换行 */
+		overflow: hidden;
+		/* 超出部分隐藏 */
+		text-overflow: ellipsis;
+		/* 显示省略号 */
+		display: block;
+		/* 确保 text-overflow 工作 */
+	}
+
+
 	.image-popup {
 		position: fixed;
 		bottom: 0;
@@ -795,13 +902,14 @@
 		margin-left: 15px;
 		margin-right: 15px
 	}
-	
-	
-	
-	.top-header{
+
+
+
+	.top-header {
 		width: 100%;
 		height: 50rpx;
 	}
+
 	.integration {
 		box-shadow: 3rpx 5rpx 30rpx 0rpx rgba(243, 170, 199, 0.4);
 		width: 700rpx;
@@ -812,7 +920,7 @@
 		background: linear-gradient(to right, #fed6e6, #f3b9c9);
 
 	}
-	
+
 	.logo {
 		position: absolute;
 		top: -30rpx;
@@ -821,27 +929,27 @@
 		width: 80rpx;
 		height: 80rpx;
 	}
-		
+
 	.user-integration {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		
+
 		.num {
 			color: #333;
 			margin-top: 25rpx;
 			font-size: 70rpx;
 			font-weight: 600;
 		}
-		
+
 		.tip {
 			/* margin-top: 10rpx; */
 			font-size: 20rpx;
 		}
 	}
-	
-	
+
+
 	.mask {
 		width: 100%;
 		height: 100vh;
@@ -852,7 +960,7 @@
 		z-index: 900;
 		opacity: 0.7;
 	}
-	
+
 	/* 优惠券 */
 	.coupon {
 		background-color: #fff;
@@ -863,11 +971,11 @@
 		z-index: 999;
 		transition: all 0.3s;
 	}
-	
+
 	.scrolls {
 		width: 100vw;
 		height: 60vh;
 		padding-top: 10upx;
-		z-index: 500;
+		z-index: 9999;
 	}
 </style>

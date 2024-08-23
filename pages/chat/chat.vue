@@ -1,11 +1,23 @@
 <template>
 	<view class="container">
+		<popup-layer style="z-index: 1001;" ref="popupRef" :direction="'left'" v-model="boolShow">
+			<view class="sidebar-content" style="z-index: 9999;">
+				<view class="sidebar-buttons" v-for="(item, index) in promptList" :key="index">
+					<button @click="food(item)" type="error" plain :text="item.name">{{item.name}}</button>
+				</view>
+			</view>
+		</popup-layer>
+		<shinn-xSlideButton @click="open" left="20rpx" top="80%" margin="20rpx" style="z-index: 1000;">
+			<view @click="open" class="repository-header">提示词仓库
+
+			</view>
+		</shinn-xSlideButton>
 		<view class="cg-chat-content">
 			<view v-for="(item, index) in chatList" :key="index">
 				<block>
 					<!-- 左侧模板 -->
 					<view class="cg-chat-left" v-if="item.userId == 'gpt'">
-						<image src="/static/jixiangwu.png" class="cg-user-pic cg-right"></image>
+						<image src="/static/jixiang.png" class="cg-user-pic cg-right"></image>
 						<view class="cg-chatbox cg-chatbox-left">
 							<text
 								class="reply">{{ (index == chatList.length -1 && index != 0) ? reply : item.text}}</text>
@@ -23,16 +35,6 @@
 			</view>
 		</view>
 
-		<view class="cg-reply-tabbar2" style="display: flex;justify-content: center;">
-			<view class="" style="">
-				<view class="" style="display: flex;justify-content: space-between;width: 100%;">
-					<u-button @click="food" style="margin-right:20rpx;margin-right:20rpx" type="error" plain
-						text="确定">美食推荐</u-button>
-					<u-button @click="culture" style="margin-right:20rpx" type="primary" plain text="确定">文化历史</u-button>
-					<u-button @click="story" style="margin-right:20rpx" type="warning" plain text="确定">有趣故事</u-button>
-				</view>
-			</view>
-		</view>
 
 		<view class="cg-reply-tabbar" :style="{ marginBottom: `${keyboardHeight}px` }">
 			<view class="cg-chat-tabbar">
@@ -51,11 +53,17 @@
 </template>
 
 <script>
+	import popupLayer from '@/components/popup-layer/popup-layer.vue';
 	export default {
-
+		components: {
+			popupLayer
+		},
 
 		data() {
 			return {
+				promptList: [],
+				boolShow: false,
+				jixiangwu: "../../../../../static/jixiang.png",
 				promptList: [],
 				userId: 0,
 				token: '',
@@ -87,7 +95,7 @@
 				url: 'http://110.40.182.65:8080/post/assistant',
 				method: 'GET',
 				data: {
-					'limit': 100
+					'limit': 5
 				},
 				success: (res) => {
 					console.log(res);
@@ -130,16 +138,14 @@
 			}
 		},
 		methods: {
-			culture() {
-				this.content = "我对这个地方的文化历史和发展背景很感兴趣，你可以总结整理，让我快速了解吗，谢谢！具体的地点是：" + this.place
-				this.sendMsg()
+			open() {
+				this.$refs.popupRef.show(); // 或者 boolShow = rue
 			},
-			story() {
-				this.content = "我对这个地方很感兴趣，不知道历史上这个地点有没有发生过一些有趣的小故事，你可以讲给我听吗？谢谢！具体的地点是：" + this.place
-				this.sendMsg()
+			close() {
+				this.$refs.popupRef.close(); // 或者 boolShow = false
 			},
-			food() {
-				this.content = "你能推荐一些必尝的特色菜或者餐馆吗？我喜欢尝试新的口味，不介意辣或者奇特的食材。如果有具体的餐馆推荐，请告诉我它们的位置和特色菜，谢谢！具体的地点是：" + this.place
+			food(item) {
+				this.content = item.prompt + '。具体的地点是：' + this.place
 				this.sendMsg()
 			},
 			randomAvatar() {
@@ -275,7 +281,28 @@
 	};
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+	.repository-header {
+		background-color: #8d19ad;
+		/* 背景色 */
+		color: #fff;
+		/* 文字颜色 */
+		font-size: 25rpx;
+		/* 字体大小 */
+		/* 字体加粗 */
+		padding-left: 10rpx;
+		padding-right: 10rpx;
+		/* 内边距 */
+		border-radius: 8rpx;
+		/* 圆角 */
+		box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.2);
+		/* 阴影 */
+		text-align: center;
+		/* 文字居中 */
+		margin-bottom: 20rpx;
+		/* 下边距 */
+	}
+
 	.container {
 		padding-left: 20rpx;
 		padding-right: 20rpx;
@@ -529,5 +556,40 @@
 				padding-left: 20rpx;
 			}
 		}
+	}
+
+
+
+
+	.cg-reply-sidebar {
+		position: fixed;
+		top: 0;
+		right: 0;
+		width: 200px;
+		height: 100%;
+		background: #ffffff;
+		box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+		transform: translateX(100%);
+		transition: transform 0.3s;
+	}
+
+	.cg-reply-sidebar.is-open {
+		transform: translateX(0);
+	}
+
+	.sidebar-content {
+		padding: 10px;
+	}
+
+	.sidebar-buttons {
+		display: flex;
+		padding: 10px;
+		flex-direction: column;
+	}
+
+	.sidebar-toggle {
+		text-align: center;
+		margin-top: 10px;
+		cursor: pointer;
 	}
 </style>

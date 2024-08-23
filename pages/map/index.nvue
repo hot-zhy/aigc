@@ -1,0 +1,97 @@
+<template>
+	<view class="">
+		<map style="width: 100%; height: 1000px;" :latitude="latitude" :longitude="longitude" :markers="marker"
+			:scale="scale" :show-location="true" @markertap="markertap" @callouttap="callouttap" :polyline="polyline">
+		</map>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				polyline: [{ //指定一系列坐标点，从数组第一项连线至最后一项
+					points: [],
+					color: '#FF5733FF', // 轨迹线的颜色，使用8位十六进制表示，后两位表示透明度
+					width: 6, // 轨迹线的宽度
+					dottedLine: false, // 是否虚线
+					arrowLine: true, // 是否带箭头
+					arrowIconPath: '../../static/images/arrow.png', // 自定义箭头图标路径
+					borderColor: '#C70039', // 轨迹线的边框颜色
+					borderWidth: 2, // 轨迹线的边框厚度
+					colorList: ['#FF5733', '#FFC300', '#DAF7A6'], // 彩虹线的颜色列表
+					level: 'abovelabels' // 压盖关系，显示在所有 POI 之上
+				}],
+				latitude: 31.208032,
+				longitude: 121.468417,
+				scale: 13,
+				marker: [],
+				placeList: [{
+						placeId: 0,
+						placeAddress: "上海天文馆"
+					},
+					{
+						placeId: 1,
+						placeAddress: "南翔古镇"
+					},
+					{
+						placeId: 2,
+						placeAddress: "上海失恋博物馆"
+					}
+				]
+			};
+		},
+		onLoad() {
+			const map = {
+				"上海天文馆": {
+					latitude: 31.208032,
+					longitude: 121.468417
+				},
+				"南翔古镇": {
+					latitude: 31.1500,
+					longitude: 121.4400
+				},
+				"上海失恋博物馆": {
+					latitude: 31.2000,
+					longitude: 121.4500
+				}
+			};
+
+			this.marker = this.placeList.map(place => {
+				const coords = map[place.placeAddress];
+				this.polyline[0].points.push({
+					latitude: coords.latitude,
+					longitude: coords.longitude
+				})
+				return {
+					id: place.placeId,
+					latitude: coords.latitude,
+					longitude: coords.longitude,
+					iconPath: '../../static/images/location.png',
+					width: 30,
+					height: 30,
+					callout: {
+						content: place.placeAddress, // 显示的文本内容
+						color: '#ffffff', // 文本颜色
+						fontSize: 14, // 文本字体大小
+						borderRadius: 10, // 边框圆角
+						borderWidth: 3, // 边框宽度
+						bgColor: '#AB2AF1', // 背景颜色
+						display: 'ALWAYS' // 总是显示
+					}
+				};
+			});
+		},
+		methods: {
+			markertap(e) {
+				console.log('Marker tapped:', e);
+			},
+			callouttap(e) {
+				console.log('Callout tapped:', e);
+			}
+		}
+	}
+</script>
+
+<style>
+</style>
