@@ -3,14 +3,13 @@
 		<popup-layer style="z-index: 1001;" ref="popupRef" :direction="'left'" v-model="boolShow">
 			<view class="sidebar-content" style="z-index: 9999;">
 				<view class="sidebar-buttons" v-for="(item, index) in promptList" :key="index">
-					<button @click="food(item)" type="error" plain :text="item.name">{{item.name}}</button>
+					<button :style="{ backgroundColor: getRandomColor() }" @click="food(item)" type="error" plain
+						:text="item.name">{{ item.name }}</button>
 				</view>
 			</view>
 		</popup-layer>
 		<shinn-xSlideButton @click="open" left="20rpx" top="80%" margin="20rpx" style="z-index: 1000;">
-			<view @click="open" class="repository-header">提示词仓库
-
-			</view>
+			<view @click="open" class="repository-header">旅行提问箱</view>
 		</shinn-xSlideButton>
 		<view class="cg-chat-content">
 			<view v-for="(item, index) in chatList" :key="index">
@@ -25,7 +24,6 @@
 					</view>
 					<!-- 右侧模板 -->
 					<view class="cg-chat-right" v-if="item.userId != 'gpt'">
-
 						<view class="cg-chatbox cg-chatbox-right">
 							<text class="reply">{{item.text}}</text>
 						</view>
@@ -34,8 +32,6 @@
 				</block>
 			</view>
 		</view>
-
-
 		<view class="cg-reply-tabbar" :style="{ marginBottom: `${keyboardHeight}px` }">
 			<view class="cg-chat-tabbar">
 				<textarea :hold-keyboard="false" auto-height class="cg-chat-input" @input="inputReply" :fixed="true"
@@ -43,15 +39,12 @@
 					:class="textareaClass" @tap.stop="showKeyBoard(1)" @blur="blurText" @focus="focusText"
 					ref="textarea" :placeholder="placeholder"></textarea>
 			</view>
-
 			<view class="cg-send-box" @click="sendMsg">
 				<image src="/static/send.png" style="width: 60rpx;height: 60rpx;"></image>
 			</view>
 		</view>
-
 	</view>
 </template>
-
 <script>
 	import popupLayer from '@/components/popup-layer/popup-layer.vue';
 	export default {
@@ -64,7 +57,6 @@
 				promptList: [],
 				boolShow: false,
 				jixiangwu: "../../../../../static/jixiang.png",
-				promptList: [],
 				userId: 0,
 				token: '',
 				loadding: false,
@@ -72,7 +64,7 @@
 				bottom: 0,
 				keyboardHeight: 0,
 				replyContainerH: uni.upx2px(500),
-				platFormUserId: '1', //用户标识
+				platFormUserId: '1',
 				roleDesc: '',
 				content: '',
 				isShow: false,
@@ -82,8 +74,8 @@
 				sendText: "发送",
 				reply: '',
 				chatList: [{
-					type: 1, //1-文字 2-图片 3-语音，4-时间 5-提醒 ...
-					userId: "gpt", //用户标识 不一定是userid
+					type: 1,
+					userId: "gpt",
 					text: '我是您的旅行小助手，我可以帮你回答景点的相关问题，包括历史背景和发展进程，请尽情提问~',
 					src: ''
 				}],
@@ -91,25 +83,11 @@
 			};
 		},
 		onLoad: function(options) {
-			uni.request({
-				url: 'http://110.40.182.65:8080/post/assistant',
-				method: 'GET',
-				data: {
-					'limit': 5
-				},
-				success: (res) => {
-					console.log(res);
-					this.promptList = res.data.data
-				},
-				fail: (err) => {
-
-				}
-			});
-			this.content = options.title
-			this.place = options.title
-			// this.sendMsg()
-			this.userId = uni.getStorageSync('userId')
+			this.content = options.title;
+			this.place = options.title;
+			this.userId = uni.getStorageSync('userId');
 			let safeH = this.isPhoneX() ? 34 : 0;
+
 			// 获取tabbar高度,单位px
 			uni.getSystemInfo({
 				success: (res) => {
@@ -117,12 +95,11 @@
 					this.keyboardHeight = this.bottom / 2;
 				}
 			});
+
 			// 监听键盘高度变化
 			uni.onKeyboardHeightChange(res => {
 				let h = res.height - safeH;
-				console.log('键盘高度', h);
 				this.keyboardHeight = h > 0 ? h : this.bottom / 2;
-				//去除 完成那一栏高度影响
 				setTimeout(() => {
 					if (this.showIndex == 1 && this.keyboardHeight != 0) {
 						this.replyContainerH = this.keyboardHeight;
@@ -131,42 +108,61 @@
 			});
 		},
 		onShow: function() {
-			// 获取token
-			var token = uni.getStorageSync('token')
+			var token = uni.getStorageSync('token');
 			if (token) {
-				this.token = token
+				this.token = token;
 			}
 		},
 		methods: {
+			getRandomColor() {
+				// 生成随机颜色
+				const r = Math.floor(Math.random() * 256);
+				const g = Math.floor(Math.random() * 256);
+				const b = Math.floor(Math.random() * 256);
+				return `rgb(${r}, ${g}, ${b})`;
+			},
 			open() {
-				this.$refs.popupRef.show(); // 或者 boolShow = rue
+				this.fetchPromptList(); // 在打开时调用接口
+				this.$refs.popupRef.show();
 			},
 			close() {
-				this.$refs.popupRef.close(); // 或者 boolShow = false
+				this.$refs.popupRef.close();
+			},
+			fetchPromptList() {
+				uni.request({
+					url: 'http://110.40.182.65:8080/post/assistant',
+					method: 'GET',
+					data: {
+						'limit': 7
+					},
+					success: (res) => {
+						console.log(res);
+						this.promptList = res.data.data;
+					},
+					fail: (err) => {
+						console.log(err);
+					}
+				});
 			},
 			food(item) {
-				this.content = item.prompt + '。具体的地点是：' + this.place
-				this.sendMsg()
+				this.content = item.prompt + '。具体的地点是：' + this.place;
+				this.sendMsg();
 			},
 			randomAvatar() {
-				return "../../static/user-avatar/" + (this.userId % 5 + 1) + '.jpg'
+				return "../../static/user-avatar/" + (this.userId % 5 + 1) + '.jpg';
 			},
 			isPhoneX() {
 				const res = uni.getSystemInfoSync();
 				let iphonex = false;
-				let models = ['iphonex', 'iphonexr', 'iphonexsmax', 'iphone11', 'iphone11pro', 'iphone11promax']
-				const model = res.model.replace(/\s/g, "").toLowerCase()
+				let models = ['iphonex', 'iphonexr', 'iphonexsmax', 'iphone11', 'iphone11pro', 'iphone11promax'];
+				const model = res.model.replace(/\s/g, "").toLowerCase();
 				if (models.includes(model)) {
 					iphonex = true;
 				}
 				return iphonex;
 			},
-			blurText() {
-
-			},
-			focusText() {
-
-			},
+			blurText() {},
+			focusText() {},
 			sendMsg() {
 				if (!this.content) {
 					uni.showToast({
@@ -176,9 +172,7 @@
 					return;
 				}
 				var temp = this.content;
-				// 清空输入框
 				this.content = '';
-				// 发送消息
 				this.chatList.push({
 					toId: 'gpt',
 					type: 1,
@@ -187,7 +181,6 @@
 					src: ''
 				});
 				setTimeout(() => {
-					// 定位到聊天最底部
 					this.toBottom();
 				}, 0);
 
@@ -195,7 +188,6 @@
 					title: '小助手正在思考中...'
 				});
 
-				// 请求接口
 				uni.request({
 					url: 'http://110.40.182.65:8080/post/query',
 					method: 'POST',
@@ -220,67 +212,50 @@
 						console.log(err);
 					}
 				});
-
 			},
 			inputReply(e) {
 				this.content = e.detail.value;
 			},
 			showKeyBoard(index) {},
-			// 内容逐字显示，每个字显示间隔为0.1秒，并识别换行符
 			showReply(content) {
-				console.log(content);
-				let reply = content
-				let replyArr = reply.split('')
-				let replyStr = ''
-				let i = 0
+				let reply = content;
+				let replyArr = reply.split('');
+				let replyStr = '';
+				let i = 0;
 				let timer = setInterval(() => {
 					if (i < replyArr.length) {
 						if (replyArr[i] == '\n') {
-							replyStr += '\n'
+							replyStr += '\n';
 						} else {
-							replyStr += replyArr[i]
+							replyStr += replyArr[i];
 						}
-						this.reply = replyStr
-						i++
-						// 定位到聊天最底部
+						this.reply = replyStr;
+						i++;
 						this.toBottom();
 					} else {
-						clearInterval(timer)
+						clearInterval(timer);
 					}
-				}, 100)
+				}, 100);
 
-				// 判断是否显示完毕
 				setTimeout(() => {
-					this.isShow = true
-				}, replyArr.length * 100)
+					this.isShow = true;
+				}, replyArr.length * 100);
 			},
-
 			toBottom() {
 				this.$nextTick(() => {
-					setTimeout(() => {
-						uni.createSelectorQuery().select(".cg-chat-content").boundingClientRect(function(
-							res) { //定位到你要的class的位置
+					uni.createSelectorQuery().select(".cg-chat-content").boundingClientRect((res) => {
+						if (res) {
 							uni.pageScrollTo({
 								scrollTop: res.height,
-								duration: 0
+								duration: 300
 							});
-						}).exec()
-					}, 0)
-				})
-			},
-		},
-		onPageScroll(e) {
-			if (e.scrollTop == 0 && !this.loadding) {
-				this.loadding = true;
-				setTimeout(() => {
-					this.show = true;
-					this.loadding = false;
-				}, 1000);
+						}
+					}).exec();
+				});
 			}
 		}
 	};
 </script>
-
 <style lang="scss" scoped>
 	.repository-header {
 		background-color: #8d19ad;
@@ -561,35 +536,40 @@
 
 
 
-	.cg-reply-sidebar {
-		position: fixed;
-		top: 0;
-		right: 0;
-		width: 200px;
-		height: 100%;
-		background: #ffffff;
-		box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-		transform: translateX(100%);
-		transition: transform 0.3s;
-	}
-
-	.cg-reply-sidebar.is-open {
-		transform: translateX(0);
-	}
-
 	.sidebar-content {
-		padding: 10px;
+		padding: 20rpx;
+		height: 60%;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
 	}
 
 	.sidebar-buttons {
-		display: flex;
-		padding: 10px;
-		flex-direction: column;
+		margin-top: 20rpx;
+	}
+
+	.sidebar-buttons button {
+		width: 100%;
+		padding-bottom: 15rpx;
+		padding-top: 15rpx;
+		margin-bottom: 10rpx;
+		border: none;
+		background-color: #aa00ff;
+		color: #fff;
+		border-radius: 10rpx;
+		font-size: 25rpx;
+		transition: background-color 0.3s ease;
+	}
+
+	.sidebar-buttons button:hover {
+		background-color: #aa00ff;
 	}
 
 	.sidebar-toggle {
 		text-align: center;
-		margin-top: 10px;
+		margin-top: 20rpx;
 		cursor: pointer;
+		font-size: 18rpx;
+		color: #aa00ff;
 	}
 </style>

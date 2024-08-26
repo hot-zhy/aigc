@@ -3,6 +3,14 @@
 		<map style="width: 100%; height: 1000px;" :latitude="latitude" :longitude="longitude" :markers="marker"
 			:scale="scale" :show-location="true" @markertap="markertap" @callouttap="callouttap" :polyline="polyline">
 		</map>
+		<view class="floating-button" @click="fetchData">
+			<view class="" style="margin-top: 5rpx;">
+				<image src="../../static/change.png" style="width: 40rpx;height:40rpx" mode=""></image>
+			</view>
+			<view>
+				<text style="color: aliceblue;font-size: 30rpx;margin-bottom:5rpx">换一换</text>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -10,88 +18,149 @@
 	export default {
 		data() {
 			return {
-				polyline: [{ //指定一系列坐标点，从数组第一项连线至最后一项
+				polyline: [{
 					points: [],
-					color: '#FF5733FF', // 轨迹线的颜色，使用8位十六进制表示，后两位表示透明度
-					width: 6, // 轨迹线的宽度
-					dottedLine: false, // 是否虚线
-					arrowLine: true, // 是否带箭头
-					arrowIconPath: '../../static/images/arrow.png', // 自定义箭头图标路径
-					borderColor: '#C70039', // 轨迹线的边框颜色
-					borderWidth: 2, // 轨迹线的边框厚度
-					colorList: ['#FF5733', '#FFC300', '#DAF7A6'], // 彩虹线的颜色列表
-					level: 'abovelabels' // 压盖关系，显示在所有 POI 之上
+					color: '#FF5733FF',
+					width: 6,
+					dottedLine: false,
+					arrowLine: true,
+					arrowIconPath: '../../static/images/arrow.png',
+					borderColor: '#C70039',
+					borderWidth: 2,
+					colorList: ['#FF5733', '#FFC300', '#DAF7A6'],
+					level: 'abovelabels'
 				}],
 				latitude: 31.208032,
 				longitude: 121.468417,
-				scale: 13,
+				scale: 16,
 				marker: [],
-				placeList: [{
-						placeId: 0,
-						placeAddress: "上海天文馆"
-					},
-					{
-						placeId: 1,
-						placeAddress: "南翔古镇"
-					},
-					{
-						placeId: 2,
-						placeAddress: "上海失恋博物馆"
-					}
-				]
+				placeList: [],
+				placeParam: '' // 用于存储当前的 place 参数
 			};
 		},
-		onLoad() {
-			const map = {
-				"上海天文馆": {
-					latitude: 31.208032,
-					longitude: 121.468417
-				},
-				"南翔古镇": {
-					latitude: 31.1500,
-					longitude: 121.4400
-				},
-				"上海失恋博物馆": {
-					latitude: 31.2000,
-					longitude: 121.4500
-				}
-			};
-
-			this.marker = this.placeList.map(place => {
-				const coords = map[place.placeAddress];
-				this.polyline[0].points.push({
-					latitude: coords.latitude,
-					longitude: coords.longitude
-				})
-				return {
-					id: place.placeId,
-					latitude: coords.latitude,
-					longitude: coords.longitude,
-					iconPath: '../../static/images/location.png',
-					width: 30,
-					height: 30,
-					callout: {
-						content: place.placeAddress, // 显示的文本内容
-						color: '#ffffff', // 文本颜色
-						fontSize: 14, // 文本字体大小
-						borderRadius: 10, // 边框圆角
-						borderWidth: 3, // 边框宽度
-						bgColor: '#AB2AF1', // 背景颜色
-						display: 'ALWAYS' // 总是显示
-					}
-				};
-			});
+		onLoad(options) {
+			this.placeParam = options.place;
+			this.fetchData();
 		},
 		methods: {
+			fetchData() {
+				uni.request({
+					url: 'http://110.40.182.65:8080/strategy/place?place=' + this.placeParam,
+					method: 'GET',
+					header: {
+						'Content-Type': 'application/json'
+					},
+					success: (res) => {
+						console.log(res);
+						this.placeList = res.data.data;
+						console.log(this.placeList);
+
+						if (this.placeList.length > 0) {
+							const latitudes = this.placeList.map(place => place.latitude);
+							const longitudes = this.placeList.map(place => place.longitude);
+
+							const minLat = Math.min(...latitudes);
+							const maxLat = Math.max(...latitudes);
+							const minLon = Math.min(...longitudes);
+							const maxLon = Math.max(...longitudes);
+
+							const centerLat = (minLat + maxLat) / 2;
+							const centerLon = (minLon + maxLon) / 2;
+
+							this.latitude = centerLat;
+							this.longitude = centerLon;
+
+							const latRange = maxLat - minLat;
+							const lonRange = maxLon - minLon;
+							const maxRange = Math.max(latRange, lonRange);
+
+							this.scale = this.calculateScale(maxRange);
+
+							this.polyline[0].points = [];
+							this.placeList.forEach(place => {
+								this.polyline[0].points.push({
+									latitude: place.latitude,
+									longitude: place.longitude
+								});
+							});
+
+							console.log('Updated polyline points:', this.polyline[0].points);
+
+							this.marker = this.placeList.map((place, index) => ({
+								id: index,
+								latitude: place.latitude,
+								longitude: place.longitude,
+								iconPath: '../../static/images/location.png',
+								width: 30,
+								height: 30,
+								callout: {
+									content: place.name,
+									color: '#ffffff',
+									fontSize: 14,
+									borderRadius: 10,
+									borderWidth: 3,
+									bgColor: this.getDarkerColor(),
+									display: 'ALWAYS'
+								}
+							}));
+
+							// 显示更新成功的 Toast
+							uni.showToast({
+								title: '更新成功',
+								icon: 'success',
+								duration: 2000
+							});
+						}
+					},
+					fail: (error) => {
+						console.log(error);
+					},
+					complete: () => {}
+				});
+			},
 			markertap(e) {
 				console.log('Marker tapped:', e);
 			},
 			callouttap(e) {
 				console.log('Callout tapped:', e);
+			},
+			calculateScale(range) {
+				if (range < 0.01) return 18;
+				if (range < 0.05) return 16;
+				if (range < 0.1) return 14;
+				if (range < 0.5) return 12;
+				if (range < 1) return 10;
+				return 8; // Default for larger ranges
+			},
+			getDarkerColor() {
+				const r = Math.floor(Math.random() * 156) + 10;
+				const g = Math.floor(Math.random() * 156) + 10;
+				const b = Math.floor(Math.random() * 156) + 10;
+				return `rgb(${r}, ${g}, ${b})`;
 			}
 		}
 	}
 </script>
 
 <style>
+	.floating-button {
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		width: 100px;
+		height: 50px;
+		background-color: #aa00ff;
+		/* 调整颜色 */
+		color: #e6e6e6;
+		display: flex;
+		align-items: center;
+		/* 垂直居中 */
+		justify-content: center;
+		/* 水平居中 */
+		text-align: center;
+		border-radius: 25px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		cursor: pointer;
+		font-size: 16px;
+	}
 </style>

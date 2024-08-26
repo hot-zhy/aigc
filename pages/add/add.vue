@@ -27,17 +27,18 @@
 		<view class="mask" catchtouchmove="preventTouchMove" v-if="couponshow2 == true" @tap="hidecoupon2"></view>
 		<view class="coupon" :style="'bottom:' + (couponshow2 == true ? '0px':'')" @click="choose">
 			<scroll-view class="scrolls" scroll-y>
-				<view class="" v-if="postList.length!==0">
-					<view class="" style="width: 100%;font-size: 20px;text-align: center;margin-top:20px;">您还没有发布帖子哦~快去发布一条贴子吧~</view>
+				<view class="" v-if="postList.length==0">
+					<view class="" style="width: 100%;font-size: 20px;text-align: center;margin-top:20px;">
+						您还没有发布帖子哦~快去发布一条贴子吧~</view>
 					<image src="../../static/images/nothing.png" mode="widthFix"
-							style="justify-content: center;margin: 0 auto;display: block;width: 60%;"></image>
+						style="justify-content: center;margin: 0 auto;display: block;width: 60%;"></image>
 				</view>
-<!-- 				<zero-waterfall-jump :list="postList">
+				<zero-waterfall-jump v-else :list="postList">
 					<view v-for="(item, index) of postList" :key="index" slot="slot{{item.postId}}">
 					</view>
 					<template v-slot:default="item">
 					</template>
-				</zero-waterfall-jump> -->
+				</zero-waterfall-jump>
 			</scroll-view>
 		</view>
 
@@ -209,6 +210,7 @@
 					url: 'http://110.40.182.65:8080/strategy/publish',
 					method: 'POST',
 					data: {
+						"place": this.place,
 						"strategyTitle": this.strategyTitle,
 						"strategyDesc": this.strategyDesc,
 						"topicList": this.topicList.map(item => item.title),
@@ -250,11 +252,9 @@
 			opencoupon() {
 				this.couponshow = true
 			},
-			// 关闭优惠券弹框 
 			hidecoupon() {
 				this.couponshow = false
 			},
-			// 打开优惠券弹框
 			opencoupon2() {
 				let userId = uni.getStorageSync('userId')
 				console.log(userId)
@@ -293,14 +293,14 @@
 					success: (res) => {
 						console.log(res);
 						this.strategyInfo = res.data.data.map(item => {
-						  return {
-						    ...item, // 保留其他属性不变
-						    morningImageList: "",
-						    afternoonImageList: "",
-						    nightImageList: "",
-						    lunchImageList: "",
-						    dinnerImageList: ""
-						  };
+							return {
+								...item, // 保留其他属性不变
+								morningImageList: "",
+								afternoonImageList: "",
+								nightImageList: "",
+								lunchImageList: "",
+								dinnerImageList: ""
+							};
 						});
 						console.log(this.strategyInfo)
 						this.days = this.strategyInfo.length
@@ -319,7 +319,7 @@
 								leftTitle: '上午',
 								leftContent: day.morningPlayTime + '小时',
 								color: this.getRandomColor(),
-								imageList:""
+								imageList: ""
 							},
 							{
 								title: day.lunch,

@@ -11,10 +11,10 @@
 			<view class="left" v-if="showLeft">
 				<view class="content">
 					<view class="title">
-						{{ item.leftTitle }}
+						{{ item.leftTitle || '暂时没有推荐地点哦' }}
 					</view>
 					<view class="sub">
-						{{ item.leftContent }}
+						{{ item.leftContent || '暂时没有内容哦，您可以自己编辑或者等待博主编辑哦~~' }}
 					</view>
 				</view>
 			</view>
@@ -23,48 +23,39 @@
 				</view>
 			</view>
 			<view class="right" :style="'background-color:'+ convertToRGBA(item.color, 0.16)">
-				<view class="" style="display: flex;">
-					<view class="">
-						<view class="time">
-							{{ item.time }}
+				<view class="content">
+					<view class="time">
+						{{ item.time }}
+					</view>
+					<view class="content-body">
+						<view class="title">
+							{{ item.title || '暂时没有推荐地点哦' }}
 						</view>
-						<view class="content" style="width: 100%;">
-							<view class=""
-								style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-								<view class="title" style="flex-grow: 1; text-align: left;">
-									{{ item.title }}
-								</view>
-								<view class="" style="flex-shrink: 0;">
-									<image src="../../static/query.png"
-										style="width:50rpx;height:50rpx;margin-left: auto;" @tap="chat(item.title)" />
-								</view>
+						<view class="action-icons">
+							<view class="view-images-btn" @click="notifyParent(item,1)">
+								<image src="../../static/map.png" mode="" class="icon-image"></image>
 							</view>
-							<view class="Express" style="width: 100%;">
-								<view class="info">
-									<view style="width: 100%;" v-if="item.content !== ''" :class="{ hide: !iSinfo }"
-										class="sub">
-										{{ item.content }}
-									</view>
-									<view style="width: 100%;" :class="{ hide: !iSinfo }" class="sub" v-else>
-										暂时没有详细介绍哦~可以编辑一下为这个旅游景点增加简短的介绍哦~
-									</view>
-								</view>
-								<view class="" style="width: 100%; display: flex;">
-									<button v-if="item.imageList.split(',').map(d=>d.trim()).filter(d=>d).length !== 0"
-										class="view-images-btn"
-										:style="{ backgroundColor: convertToRGBA(item.color, 0.26), flex: 1 }"
-										@click="notifyParent(item,0)">
-										查看关联图片
-									</button>
-									<view class="view-images-btn" style="justify-content: center;justify-items: center;"
-										:style="{ flex: 1, borderRadius: '20px', display: 'flex', alignItems: 'center', paddingLeft: '10px', paddingRight: '10px' }"
-										@click="notifyParent(item,1)">
-										<image src="../../static/daka.png" mode="" style="width: 75rpx; height: 75rpx;">
-										</image>
-									</view>
-								</view>
-
+							<view class="query-icon">
+								<image src="../../static/query.png" class="icon-image" @tap="chat(item.title)" />
 							</view>
+						</view>
+					</view>
+					<view class="Express">
+						<view class="info">
+							<view style="width: 100%;" v-if="item.content !== ''" :class="{ hide: !iSinfo }"
+								class="sub">
+								{{ item.content || '暂时没有内容哦，您可以自己编辑或者等待博主编辑哦~~'}}
+							</view>
+							<view style="width: 100%;" :class="{ hide: !iSinfo }" class="sub" v-else>
+								暂时没有详细介绍哦~可以编辑一下为这个旅游景点增加简短的介绍哦~
+							</view>
+						</view>
+						<view class="button-container">
+							<button v-if="item.imageList.split(',').map(d=>d.trim()).filter(d=>d).length !== 0"
+								class="view-images-btn" :style="{ backgroundColor: convertToRGBA(item.color, 0.26) }"
+								@click="notifyParent(item,0)">
+								查看关联图片
+							</button>
 						</view>
 					</view>
 				</view>
@@ -115,7 +106,6 @@
 				} else {
 					this.$emit('show-popup', item.title, index)
 				}
-				// this.$emit('show-image-popup', imageList);
 			},
 			chat(title) {
 				console.log(title)
@@ -127,17 +117,14 @@
 	};
 </script>
 
-
 <style lang="scss" scoped>
 	.view-images-btn {
-		// width:100%;
-		margin-top: 5rpx;
 		font-size: 25rpx;
-		// background-color: #dbdde2;
 		text-align: center;
 		cursor: pointer;
 		border: none;
 		outline: none;
+		background-color: transparent;
 	}
 
 	.Express {
@@ -155,7 +142,7 @@
 				font-family: PingFangSC-Regular, PingFang SC;
 				font-weight: 400;
 				color: rgba(102, 102, 102, 1);
-				word-break: break-word; //换行模式
+				word-break: break-word;
 			}
 
 			text {
@@ -181,16 +168,16 @@
 	}
 
 	.hide {
-		word-break: break-word; //换行模式
+		word-break: break-word;
 		overflow: hidden;
-		text-overflow: ellipsis; //修剪文字
+		text-overflow: ellipsis;
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
 	}
 
 	.zero-timeline {
 		position: relative;
-		padding: 10rpx;
+		padding: 0rpx;
 		display: flex;
 		flex-direction: column;
 
@@ -255,6 +242,8 @@
 			border-radius: 10px;
 			flex: 1;
 			margin-bottom: var(--gap);
+			display: flex;
+			flex-direction: column;
 
 			.time {
 				font-size: 24rpx;
@@ -262,18 +251,22 @@
 			}
 
 			.content {
-				padding: 20rpx 30rpx;
+				padding: 15rpx 30rpx;
 				min-height: 50rpx;
 				background: var(--bgcolor);
 				border-radius: 10rpx;
 				white-space: pre-wrap;
 				word-wrap: break-word;
 				word-break: break-all;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
 
 				.title {
 					font-weight: 650;
 					color: var(--color);
 					font-size: 33.5rpx;
+					text-align: left;
 				}
 
 				.sub {
@@ -297,40 +290,29 @@
 		}
 	}
 
-	// 图片弹出框样式
-	.image-popup {
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		background: #fff;
-		border-top-left-radius: 20rpx;
-		border-top-right-radius: 20rpx;
-		box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
-		z-index: 1000;
+	.action-icons {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
 	}
 
-	.image-popup-mask {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: rgba(0, 0, 0, 0.5);
+	.view-images-btn {
+		margin-left: 10rpx;
 	}
 
-	.image-popup-content {
-		padding: 20rpx;
-		height: 70vh;
+	.query-icon {
+		margin-left: 10rpx;
+		flex-shrink: 0;
 	}
 
-	.image-item {
-		margin-bottom: 10rpx;
+	.icon-image {
+		width: 60rpx;
+		height: 60rpx;
 	}
 
-	.image {
-		width: 100%;
-		height: 200rpx;
-		border-radius: 10rpx;
+	.content-body {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 	}
 </style>

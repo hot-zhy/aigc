@@ -254,7 +254,8 @@
 				days: 4,
 				optionid: 0,
 				followUserList: [],
-				participantIds: []
+				participantIds: [],
+				place: ''
 			}
 		},
 		onLoad(options) {
@@ -268,6 +269,7 @@
 					console.log(res)
 					//TODO participant获取
 					this.participants = res.data.data.team
+					this.place = res.data.data.place
 					this.participantIds = this.participants.map(item => item.userId)
 					this.descTotal = res.data.data
 					this.currentUserId = uni.getStorageSync('userId')
@@ -429,8 +431,9 @@
 					this.showImagePopup = true;
 				} else {
 					this.showPlacesPopup = true;
+					let totalPlace = this.place + '-' + data
 					uni.navigateTo({
-						url: `/pages/map/index?place=${data}`
+						url: `/pages/map/index?place=${totalPlace}`
 					})
 				}
 
